@@ -8,6 +8,7 @@ requires-python = ">=3.12"
 dependencies = [
     "faker>=40.39.0",
     "fastembed>=0.8.1",
+    "mcp>=1.24,<2",
     "psycopg-pool>=3.2",
     "psycopg[binary]>=3.2",
     "pydantic>=2.10",

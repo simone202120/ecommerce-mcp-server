@@ -23,6 +23,9 @@ class Settings(BaseSettings):
 
     embedding_model: str = "BAAI/bge-small-en-v1.5"
 
+    mcp_host: str = "127.0.0.1"
+    mcp_port: int = 8000
+
     @property
     def tracing_enabled(self) -> bool:
         return bool(self.langfuse_public_key and self.langfuse_secret_key.get_secret_value())
