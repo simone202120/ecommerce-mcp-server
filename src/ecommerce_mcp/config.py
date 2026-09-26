@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     langfuse_host: str = "https://cloud.langfuse.com"
 
     database_url: str = "postgresql://shop:shop@localhost:5432/shop"
+    db_pool_size: int = Field(default=5, gt=0)
+    db_statement_timeout_ms: int = Field(default=5000, gt=0)
+
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
 
     @property
     def tracing_enabled(self) -> bool:
