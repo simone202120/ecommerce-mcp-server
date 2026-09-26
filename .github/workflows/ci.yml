@@ -41,6 +41,16 @@ jobs:
         env:
           DATABASE_URL: postgresql://shop:shop@localhost:5432/shop
 
+  docker-build:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+
   docker:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [quality, test]

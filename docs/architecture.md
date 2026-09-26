@@ -53,3 +53,35 @@ The MCP SDK sends any exception message to the client verbatim. Domain errors (`
 written to be shown; `psycopg` errors (including pool timeouts) are logged with their stack trace
 and replaced by "the database query failed; try again later" so hosts and SQL never leak.
 *Trade-off:* clients cannot tell a timeout from a lost connection.
+### `create_agent` instead of the deprecated `create_react_agent`
+LangGraph 1.x deprecates `langgraph.prebuilt.create_react_agent` in favour of
+`langchain.agents.create_agent`, which builds the same prebuilt ReAct loop on LangGraph.
+*Trade-off:* one extra dependency (`langchain`) to avoid shipping on a deprecated API.
+
+### Agent CLI prints with `sys.stdout.write`
+Logs go to stderr through `logging`; the agent's answer is the CLI's output, not a log record.
+*Trade-off:* the one place in `src/` that writes to stdout directly.
+
+### Docker image bakes the embedding model
+The image downloads the FastEmbed model at build time and runs with `HF_HUB_OFFLINE=1`, so the seed
+job and the server start without network access to Hugging Face. One image serves the seed job, the
+server and the agent CLI. A PR-only CI job builds the image without pushing it.
+*Trade-off:* a larger image (~70 MB of model weights) for predictable, offline startup.
+
+### Streamlit UI calls the agent module directly
+`docs/design.md` allows the chat UI to call either a thin FastAPI endpoint or the agent module.
+The UI imports only `agent.runner` (never `core/`), which reaches the tools over MCP streamable HTTP,
+exactly like the CLI.
+*Trade-off:* no extra HTTP service to build and deploy, but the UI process needs the LLM key.
+
+### Run cost is an estimate from configured prices
+Token counts come from the LLM's usage metadata; the dollar figure multiplies them by
+`LLM_INPUT_USD_PER_MTOK` / `LLM_OUTPUT_USD_PER_MTOK`.
+*Trade-off:* no dependency on provider-specific billing fields, at the price of keeping the two
+settings in line with the chosen model.
+
+### Tool cards use tabs for the raw response
+Streamlit does not allow nested expanders, so each tool card is an expander with a "Preview" tab
+(table, metrics or chart) and a "Raw response" tab holding the collapsed JSON. Cards with charts
+(`sales_summary`, `top_products`) start open because they carry the answer's numbers.
+*Trade-off:* one extra click to reach the raw JSON.

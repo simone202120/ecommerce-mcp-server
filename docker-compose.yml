@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: shop
+      POSTGRES_DB: shop
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shop"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  seed:
+    build: .
+    command: ["python", "-m", "ecommerce_mcp.infra.seed"]
+    environment:
+      DATABASE_URL: postgresql://shop:shop@postgres:5432/shop
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  mcp:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql://shop:shop@postgres:5432/shop
+    ports: ["8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 8000), 2)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+
+  ui:
+    build: .
+    command:
+      - streamlit
+      - run
+      - src/ecommerce_mcp/ui/app.py
+      - --server.address=0.0.0.0
+      - --server.port=8501
+      - --server.headless=true
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      MCP_URL: http://mcp:8000/mcp
+    ports: ["8501:8501"]
+    depends_on:
+      mcp:
+        condition: service_healthy
+
+volumes:
+  pgdata:
