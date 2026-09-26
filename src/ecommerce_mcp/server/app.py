@@ -1,5 +1,6 @@
 """Builds the FastMCP server: lifespan resources (DB pool, embedder), tools and resources."""
 
+import asyncio
 from collections.abc import AsyncIterator, Callable
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 
@@ -27,8 +28,9 @@ Lifespan = Callable[[FastMCP[AppContext]], AbstractAsyncContextManager[AppContex
 def database_lifespan(settings: Settings) -> Lifespan:
     @asynccontextmanager
     async def lifespan(_: FastMCP[AppContext]) -> AsyncIterator[AppContext]:
-        embedder = create_embedder(settings)
         async with read_only_pool(settings) as pool:
+            # Loading the ONNX model takes about a second of CPU: keep it off the event loop.
+            embedder = await asyncio.to_thread(create_embedder, settings)
             yield AppContext(pool=pool, embed_query=embedder.embed_query)
 
     return lifespan

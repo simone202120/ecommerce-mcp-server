@@ -27,6 +27,9 @@ from ecommerce_mcp.server.context import AppContext, app_context
 
 logger = logging.getLogger(__name__)
 
+MAX_LIMIT = 50
+MAX_STOCK_THRESHOLD = 10_000
+
 READ_ONLY = ToolAnnotations(
     readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False
 )
@@ -45,8 +48,8 @@ EndDate = Annotated[date, Field(description="Last day included, YYYY-MM-DD (UTC)
 def _limit(default_help: str) -> Any:
     return Field(
         ge=1,
-        le=service.MAX_LIMIT,
-        description=f"Maximum rows to return (1-{service.MAX_LIMIT}). {default_help}",
+        le=MAX_LIMIT,
+        description=f"Maximum rows to return (1-{MAX_LIMIT}). {default_help}",
     )
 
 
@@ -148,9 +151,9 @@ def register_tools(server: FastMCP[AppContext]) -> None:
             int,
             Field(
                 ge=0,
-                le=service.MAX_STOCK_THRESHOLD,
+                le=MAX_STOCK_THRESHOLD,
                 description="Products with stock strictly below this value are listed "
-                f"(0-{service.MAX_STOCK_THRESHOLD}). Default 10.",
+                f"(0-{MAX_STOCK_THRESHOLD}). Default 10.",
             ),
         ] = 10,
     ) -> LowStockReport:
