@@ -22,7 +22,7 @@ from ecommerce_mcp.core.models import (
     SalesSummary,
     TopProducts,
 )
-from ecommerce_mcp.core.validation import MAX_QUERY_LENGTH
+from ecommerce_mcp.core.validation import MAX_QUERY_LENGTH, MAX_RANGE_DAYS
 from ecommerce_mcp.server.context import AppContext, app_context
 
 logger = logging.getLogger(__name__)
@@ -32,12 +32,22 @@ READ_ONLY = ToolAnnotations(
 )
 
 ToolContext = Context[Any, AppContext, Any]
-StartDate = Annotated[date, Field(description="First day included, YYYY-MM-DD (UTC).")]
+StartDate = Annotated[
+    date,
+    Field(
+        description="First day included, YYYY-MM-DD (UTC). Must be on or before end_date; "
+        f"the range may span at most {MAX_RANGE_DAYS} days."
+    ),
+]
 EndDate = Annotated[date, Field(description="Last day included, YYYY-MM-DD (UTC).")]
 
 
 def _limit(default_help: str) -> Any:
-    return Field(ge=1, le=service.MAX_LIMIT, description=f"Maximum rows to return. {default_help}")
+    return Field(
+        ge=1,
+        le=service.MAX_LIMIT,
+        description=f"Maximum rows to return (1-{service.MAX_LIMIT}). {default_help}",
+    )
 
 
 @asynccontextmanager
@@ -69,12 +79,14 @@ def register_tools(server: FastMCP[AppContext]) -> None:
             str | None,
             Field(
                 description="Optional exact category name, case-insensitive: Electronics, "
-                "Home & Kitchen, Sports & Outdoors, Books, Clothing, Beauty & Personal Care."
+                "Home & Kitchen, Sports & Outdoors, Books, Clothing, Beauty & Personal Care. "
+                "An unknown category returns no products."
             ),
         ] = None,
     ) -> ProductSearchResult:
         """Semantic product search: finds products whose meaning matches the query, even without
-        shared keywords. Returns price, stock and a similarity score (higher is closer)."""
+        shared keywords. Returns price, stock and a cosine similarity score (1 = identical meaning;
+        above ~0.8 is a strong match)."""
         app = app_context(ctx)
         async with _connection(app) as conn:
             return await service.search_products(conn, app.embed_query, query, limit, category)
@@ -82,7 +94,13 @@ def register_tools(server: FastMCP[AppContext]) -> None:
     @server.tool(annotations=READ_ONLY)
     async def get_customer_orders(
         ctx: ToolContext,
-        customer_email: Annotated[str, Field(description="The customer's email address.")],
+        customer_email: Annotated[
+            str,
+            Field(
+                description="The customer's email address; exact match, case-insensitive "
+                "(no partial matches)."
+            ),
+        ],
         limit: Annotated[int, _limit("Default 10.")] = 10,
     ) -> CustomerOrders:
         """A customer's most recent orders (newest first), each with status, line items and
@@ -101,7 +119,8 @@ def register_tools(server: FastMCP[AppContext]) -> None:
         ] = "day",
     ) -> SalesSummary:
         """Revenue, number of orders and average order value (AOV) between two dates, in total
-        and per day, week (starting Monday) or month. Cancelled orders are excluded."""
+        and per day, week (starting Monday) or month. Cancelled orders are excluded; a range with
+        no orders returns zero totals."""
         app = app_context(ctx)
         async with _connection(app) as conn:
             return await service.sales_summary(conn, start_date, end_date, group_by)
@@ -117,7 +136,7 @@ def register_tools(server: FastMCP[AppContext]) -> None:
         ] = "revenue",
     ) -> TopProducts:
         """Best-selling products between two dates, ranked by revenue or by units sold.
-        Cancelled orders are excluded."""
+        Cancelled orders are excluded; a range with no sales returns an empty list."""
         app = app_context(ctx)
         async with _connection(app) as conn:
             return await service.top_products(conn, start_date, end_date, limit, by)
@@ -130,7 +149,8 @@ def register_tools(server: FastMCP[AppContext]) -> None:
             Field(
                 ge=0,
                 le=service.MAX_STOCK_THRESHOLD,
-                description="Products with stock strictly below this value are listed. Default 10.",
+                description="Products with stock strictly below this value are listed "
+                f"(0-{service.MAX_STOCK_THRESHOLD}). Default 10.",
             ),
         ] = 10,
     ) -> LowStockReport:

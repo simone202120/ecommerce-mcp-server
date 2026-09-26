@@ -17,7 +17,8 @@ SERVER_INSTRUCTIONS = (
     "Use search_products to find products by meaning, get_customer_orders for a customer's "
     "history, sales_summary and top_products for sales analytics over a date range, and "
     "low_stock_alert for products that need restocking. Read schema://tables for the data model. "
-    "Money amounts are in EUR; dates are YYYY-MM-DD in UTC."
+    "Money amounts are in EUR; dates are YYYY-MM-DD in UTC. Row limits and date ranges are "
+    "capped; an invalid argument returns an error message explaining how to fix it."
 )
 
 Lifespan = Callable[[FastMCP[AppContext]], AbstractAsyncContextManager[AppContext]]
