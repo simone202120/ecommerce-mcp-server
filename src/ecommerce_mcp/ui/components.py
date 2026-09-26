@@ -1,6 +1,7 @@
 """Rendering helpers for the chat page: tool cards, per-tool result previews and run metrics."""
 
 import json
+import logging
 from collections.abc import Callable
 from typing import Any
 
@@ -9,6 +10,8 @@ import streamlit as st
 
 from ecommerce_mcp.agent.graph import ToolCall
 from ecommerce_mcp.agent.runner import RunReport
+
+logger = logging.getLogger(__name__)
 
 EXAMPLES = (
     "Which products are running low and how did they sell last month?",
@@ -90,7 +93,11 @@ def tool_card(call: ToolCall) -> None:
             return
         preview_tab, raw_tab = st.tabs(["Preview", "Raw response"])
         with preview_tab:
-            preview(data)
+            try:
+                preview(data)
+            except (KeyError, TypeError, ValueError):
+                logger.exception("Unexpected %s result shape", call.name)
+                st.caption("No preview for this result; see the raw response.")
         with raw_tab:
             st.json(data, expanded=False)
 

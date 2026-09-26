@@ -115,6 +115,21 @@ def test_agent_failure_shows_friendly_error(
     assert "boom" not in app.error[0].value
 
 
+def test_unexpected_result_shape_falls_back_without_crashing(
+    connected: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    async def fake_answer(question: str, settings: Settings) -> RunReport:
+        call = ToolCall("sales_summary", {}, json.dumps({"total_orders": 5}))
+        return RunReport(AgentAnswer([call], "Five orders."), cost_usd=0.0, trace_url=None)
+
+    monkeypatch.setattr(runner, "answer_question", fake_answer)
+    app = run_app()
+    app.main.button[1].click().run()
+
+    assert not app.exception
+    assert "No preview for this result" in " ".join(c.value for c in app.caption)
+
+
 @pytest.mark.parametrize(
     ("text", "expected"),
     [('{"a": 1}', {"a": 1}), ("Error executing tool", None), ("[1, 2]", None)],
