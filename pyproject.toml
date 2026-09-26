@@ -6,6 +6,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
+    "psycopg[binary]>=3.2",
     "pydantic>=2.10",
     "pydantic-settings>=2.6",
 ]
@@ -15,6 +16,7 @@ dev = [
     "deptry>=0.23",
     "mypy>=1.15",
     "pytest>=8.3",
+    "pytest-asyncio>=1.0",
     "pytest-cov>=6.0",
     "ruff>=0.11",
     "vulture>=2.14",
@@ -45,6 +47,9 @@ disallow_untyped_defs = false
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-m 'not integration and not llm'"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 markers = [
     "integration: needs real infrastructure (docker compose services)",
     "llm: calls a real LLM through OpenRouter (manual only)",
