@@ -87,10 +87,12 @@ All settings are environment variables (or `.env`), read by `src/ecommerce_mcp/c
 | `MCP_HOST` / `MCP_PORT` | `127.0.0.1` / `8000` | Streamable HTTP bind address |
 | `MCP_URL` | `http://localhost:8000/mcp` | Where the agent and UI reach the server |
 | `OPENROUTER_API_KEY` | — | LLM access (OpenRouter, OpenAI-compatible) |
+| `OPENROUTER_BASE_URL` | `https://openrouter.ai/api/v1` | OpenRouter API base URL |
 | `LLM_MODEL` | `google/gemini-3.8-flash` | Chat model |
 | `LLM_TIMEOUT_SECONDS` / `AGENT_MAX_STEPS` | `60` / `12` | Agent limits |
 | `LLM_INPUT_USD_PER_MTOK` / `LLM_OUTPUT_USD_PER_MTOK` | `0.30` / `2.50` | Cost estimate shown per run |
-| `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` / `LANGFUSE_HOST` | empty | Optional tracing |
+| `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` | empty | Optional tracing (both required to enable it) |
+| `LANGFUSE_HOST` | `https://cloud.langfuse.com` | Langfuse instance URL |
 
 ## Security
 
