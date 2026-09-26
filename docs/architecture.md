@@ -53,3 +53,17 @@ The MCP SDK sends any exception message to the client verbatim. Domain errors (`
 written to be shown; `psycopg` errors (including pool timeouts) are logged with their stack trace
 and replaced by "the database query failed; try again later" so hosts and SQL never leak.
 *Trade-off:* clients cannot tell a timeout from a lost connection.
+### `create_agent` instead of the deprecated `create_react_agent`
+LangGraph 1.x deprecates `langgraph.prebuilt.create_react_agent` in favour of
+`langchain.agents.create_agent`, which builds the same prebuilt ReAct loop on LangGraph.
+*Trade-off:* one extra dependency (`langchain`) to avoid shipping on a deprecated API.
+
+### Agent CLI prints with `sys.stdout.write`
+Logs go to stderr through `logging`; the agent's answer is the CLI's output, not a log record.
+*Trade-off:* the one place in `src/` that writes to stdout directly.
+
+### Docker image bakes the embedding model
+The image downloads the FastEmbed model at build time and runs with `HF_HUB_OFFLINE=1`, so the seed
+job and the server start without network access to Hugging Face. One image serves the seed job, the
+server and the agent CLI. A PR-only CI job builds the image without pushing it.
+*Trade-off:* a larger image (~70 MB of model weights) for predictable, offline startup.

@@ -25,6 +25,10 @@ class Settings(BaseSettings):
 
     mcp_host: str = "127.0.0.1"
     mcp_port: int = 8000
+    mcp_url: str = "http://localhost:8000/mcp"
+
+    llm_timeout_seconds: float = 60.0
+    agent_max_steps: int = 12
 
     @property
     def tracing_enabled(self) -> bool:
