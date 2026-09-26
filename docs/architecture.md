@@ -25,3 +25,20 @@ and capped at 731 days to bound the work (and rows) of a single call.
 Query embeddings are sent as `'[0.1,0.2,...]'::vector` bind parameters instead of registering the
 `pgvector` Python adapter.
 *Trade-off:* one fewer dependency, at the cost of a slightly larger query payload.
+
+### Defense in depth for "read-only"
+Tool sessions are opened with `default_transaction_read_only=on` and a `statement_timeout`, on top of
+the SELECT-only queries. Even a future query bug cannot write to the database or run unbounded.
+*Trade-off:* the seed job needs its own read-write connection instead of the pool.
+
+### No vector index on `products.embedding`
+With about 50 products an exact sequential scan is faster than an HNSW/IVFFlat index and always
+returns the true nearest neighbours.
+*Trade-off:* a larger catalog needs `CREATE INDEX ... USING hnsw (embedding vector_cosine_ops)`.
+
+### Product catalog as hand-written CSV, customers and orders from Faker
+Semantic search is only convincing with realistic names and descriptions, which Faker does not
+produce; customers and orders are generated with a fixed seed relative to the seed time, so "last
+month" always has data.
+*Trade-off:* re-running the seed on another day shifts the dates (the same seed and `now` always
+produce identical data).

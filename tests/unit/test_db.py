@@ -1,3 +1,6 @@
+import pytest
+from pydantic import ValidationError
+
 from ecommerce_mcp.config import Settings
 from ecommerce_mcp.infra.db import read_only_pool
 
@@ -10,3 +13,8 @@ def test_read_only_pool_forces_read_only_time_limited_sessions() -> None:
     assert "statement_timeout=1234" in options
     assert pool.max_size == 3
     assert pool.closed
+
+
+def test_pool_settings_must_be_positive() -> None:
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, db_pool_size=0)
