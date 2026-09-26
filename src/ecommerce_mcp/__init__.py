@@ -1,0 +1,1 @@
+"""ecommerce-mcp-server package."""
