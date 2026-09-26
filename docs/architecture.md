@@ -42,3 +42,14 @@ produce; customers and orders are generated with a fixed seed relative to the se
 month" always has data.
 *Trade-off:* re-running the seed on another day shifts the dates (the same seed and `now` always
 produce identical data).
+
+### `mcp` SDK pinned below 2.0
+`mcp` 2.x renames `FastMCP` to `MCPServer`, and `langchain-mcp-adapters` still requires `mcp<2`.
+The server uses FastMCP from `mcp` 1.x, as the design asks.
+*Trade-off:* a migration is needed once the adapters support `mcp` 2.
+
+### Database errors are masked at the tool boundary
+The MCP SDK sends any exception message to the client verbatim. Domain errors (`ShopError`) are
+written to be shown; `psycopg` errors (including pool timeouts) are logged with their stack trace
+and replaced by "the database query failed; try again later" so hosts and SQL never leak.
+*Trade-off:* clients cannot tell a timeout from a lost connection.

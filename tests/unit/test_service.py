@@ -1,49 +1,12 @@
 from collections.abc import Sequence
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
-from typing import Any, cast
 
 import pytest
-from psycopg import AsyncConnection
 
 from ecommerce_mcp.core import queries, service
 from ecommerce_mcp.core.errors import CustomerNotFoundError, InvalidInputError
-
-
-class FakeCursor:
-    def __init__(self, conn: "FakeConnection") -> None:
-        self.conn = conn
-
-    async def __aenter__(self) -> "FakeCursor":
-        return self
-
-    async def __aexit__(self, *exc: object) -> None:
-        return None
-
-    async def execute(self, query: str, params: dict[str, Any]) -> None:
-        self.conn.executed.append((query, params))
-
-    async def fetchall(self) -> list[dict[str, Any]]:
-        return self.conn.results.pop(0)
-
-
-class FakeConnection:
-    """Records executed queries and returns one canned result set per execute call."""
-
-    def __init__(self, *results: list[dict[str, Any]]) -> None:
-        self.results = list(results)
-        self.executed: list[tuple[str, dict[str, Any]]] = []
-
-    def cursor(self, row_factory: object) -> FakeCursor:
-        return FakeCursor(self)
-
-    def as_conn(self) -> AsyncConnection[Any]:
-        return cast(AsyncConnection[Any], self)
-
-
-def fake_embed(text: str) -> Sequence[float]:
-    return [0.25, 0.5]
-
+from tests.unit.fakes import FakeConnection, fake_embed
 
 PRODUCT_ROW = {
     "sku": "EL-001",
