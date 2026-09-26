@@ -41,3 +41,33 @@ Write operations, auth on the MCP server, web UI (the demo uses CLI + Claude Des
 ## Deliverables
 Docker compose (postgres, seed job, mcp server), README with Claude Desktop config snippet and
 architecture diagram, `docs/architecture.md`, `docs/code-map.md`, CI green, coverage >= 80%.
+
+## UI and demo polish
+
+The UI is what the interviewer sees first: it must look clean and deliberate, not like a default
+Streamlit script.
+
+- Custom theme in `.streamlit/config.toml` (`[theme]`: base, primaryColor, backgroundColor,
+  secondaryBackgroundColor, textColor, font, baseRadius) using the palette below. No heavy CSS hacks;
+  at most a few lines of `st.markdown(..., unsafe_allow_html=True)` for spacing.
+- `st.set_page_config` with title, icon and `layout="wide"`; a short header with the project name and
+  a one-line description; a sidebar for settings and state.
+- Long operations show progress (`st.status` / `st.progress` / `st.spinner`) with human-readable steps.
+- Every screen has a useful empty state: 3 clickable example inputs that run a real demo.
+- Results are presented, not dumped: containers with borders, badges, metrics, expanders. Raw JSON
+  only in a collapsed "Raw response" expander.
+- Show cost and speed of each run (tokens, estimated cost, latency) as small metrics: it proves the
+  observability story. Link to the Langfuse trace when tracing is enabled.
+- Errors are friendly `st.error` messages that say what to do, never stack traces.
+- The UI talks to the FastAPI backend over HTTP (backend URL from settings), never imports `core/`.
+- Keep it one file per page under `ui/`, small helpers in one module; no duplicated rendering code.
+
+Scope addition: a small Streamlit chat UI for the agent (in addition to the CLI and Claude Desktop),
+in `ui/`, talking to the agent through a thin FastAPI endpoint or directly to the agent module
+(allowed here because the agent is the "backend"); keep it a single page.
+Palette: dark base, background `#111318`, surface `#1A1D24`, text `#E8E9ED`, primary `#F59E0B`.
+Layout: sidebar listing the MCP tools with their descriptions (fetched from the server) and a
+connection status dot. Main area: chat; each agent turn shows the tool calls it made as compact
+expandable cards (tool name, arguments, result preview), then the answer; numeric answers use
+`st.metric` or a small chart. Examples: "Which products are running low and how did they sell last
+month?", "Top 5 products by revenue this quarter", "Find products similar to 'wireless headphones'".
