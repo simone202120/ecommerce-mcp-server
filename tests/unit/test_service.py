@@ -96,7 +96,7 @@ async def test_get_customer_orders_returns_orders_with_items() -> None:
         "status": "delivered",
         "created_at": datetime(2026, 5, 1, 10, tzinfo=UTC),
         "total": Decimal("59.97"),
-        "items": [{"sku": "HK-001", "product": "Mug", "quantity": 3, "unit_price": 19.99}],
+        "items": [{"sku": "HK-001", "product": "Mug", "quantity": 3, "unit_price": 19.990001}],
     }
     conn = FakeConnection([customer], [order])
 
@@ -107,6 +107,7 @@ async def test_get_customer_orders_returns_orders_with_items() -> None:
     assert result.customer_name == "Jane Doe"
     assert result.orders[0].total == 59.97
     assert result.orders[0].items[0].quantity == 3
+    assert result.orders[0].items[0].unit_price == 19.99
 
 
 async def test_get_customer_orders_unknown_email_raises() -> None:

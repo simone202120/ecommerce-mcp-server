@@ -35,8 +35,6 @@ from ecommerce_mcp.core.validation import (
 EmbedQuery = Callable[[str], Sequence[float]]
 Row = dict[str, Any]
 
-MAX_LIMIT = 50
-MAX_STOCK_THRESHOLD = 10_000
 LOW_STOCK_MAX_ROWS = 100
 RECENT_SALES_DAYS = 30
 
@@ -97,7 +95,16 @@ async def get_customer_orders(
     rows = await _fetch_all(
         conn, queries.CUSTOMER_ORDERS, {"customer_id": customer["id"], "limit": limit}
     )
-    orders = [Order.model_validate({**row, "total": _money(row["total"])}) for row in rows]
+    orders = [
+        Order.model_validate(
+            {
+                **row,
+                "total": _money(row["total"]),
+                "items": [{**i, "unit_price": _money(i["unit_price"])} for i in row["items"]],
+            }
+        )
+        for row in rows
+    ]
     return CustomerOrders(
         customer_email=customer["email"], customer_name=customer["name"], orders=orders
     )
