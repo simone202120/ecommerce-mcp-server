@@ -14,3 +14,10 @@ def create_chat_model(settings: Settings) -> BaseChatModel:
         temperature=0,
         timeout=settings.llm_timeout_seconds,
     )
+
+
+def estimate_cost_usd(settings: Settings, input_tokens: int, output_tokens: int) -> float:
+    return (
+        input_tokens * settings.llm_input_usd_per_mtok
+        + output_tokens * settings.llm_output_usd_per_mtok
+    ) / 1_000_000

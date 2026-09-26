@@ -1,4 +1,4 @@
-# One image for the seed job, the MCP server and the agent CLI.
+# One image for the seed job, the MCP server, the agent CLI and the Streamlit UI.
 FROM python:3.12-slim-bookworm AS builder
 
 RUN pip install --no-cache-dir "uv>=0.8,<0.9"
@@ -7,6 +7,7 @@ WORKDIR /app
 COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --locked --no-dev --no-install-project
 COPY src ./src
+COPY .streamlit ./.streamlit
 RUN uv sync --locked --no-dev
 
 # Bake the embedding model into the image so containers start without downloading it.
@@ -28,5 +29,5 @@ ENV PATH="/app/.venv/bin:$PATH" \
     MCP_HOST=0.0.0.0 \
     MCP_PORT=8000
 
-EXPOSE 8000
+EXPOSE 8000 8501
 CMD ["python", "-m", "ecommerce_mcp.server", "--transport", "streamable-http"]

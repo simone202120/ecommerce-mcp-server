@@ -35,5 +35,24 @@ services:
       seed:
         condition: service_completed_successfully
 
+  ui:
+    build: .
+    command:
+      - streamlit
+      - run
+      - src/ecommerce_mcp/ui/app.py
+      - --server.address=0.0.0.0
+      - --server.port=8501
+      - --server.headless=true
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      MCP_URL: http://mcp:8000/mcp
+    ports: ["8501:8501"]
+    depends_on:
+      mcp:
+        condition: service_started
+
 volumes:
   pgdata:

@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     mcp_url: str = "http://localhost:8000/mcp"
 
     llm_timeout_seconds: float = 60.0
+    # Used only to estimate the cost of a run shown in the CLI and UI.
+    llm_input_usd_per_mtok: float = 0.30
+    llm_output_usd_per_mtok: float = 2.50
     agent_max_steps: int = 12
 
     @property

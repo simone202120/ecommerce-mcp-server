@@ -8,7 +8,7 @@ from ecommerce_mcp.agent.graph import ask, build_agent
 from ecommerce_mcp.config import Settings
 from ecommerce_mcp.infra.seed import Dataset
 from ecommerce_mcp.llm.chat import create_chat_model
-from ecommerce_mcp.llm.tracing import tracing_callbacks
+from ecommerce_mcp.llm.tracing import tracing
 from ecommerce_mcp.server.app import create_server
 
 pytestmark = [pytest.mark.llm, pytest.mark.integration]
@@ -23,8 +23,8 @@ async def test_agent_answers_the_demo_question(settings: Settings, dataset: Data
     async with create_connected_server_and_client_session(server._mcp_server) as session:
         tools = await load_mcp_tools(session)
         agent = build_agent(create_chat_model(settings), tools, datetime.now(UTC).date())
-        with tracing_callbacks(settings) as callbacks:
-            result = await ask(agent, DEMO_QUESTION, callbacks, settings.agent_max_steps)
+        with tracing(settings) as trace:
+            result = await ask(agent, DEMO_QUESTION, trace.callbacks, settings.agent_max_steps)
 
     called = {call.name for call in result.tool_calls}
     assert "low_stock_alert" in called

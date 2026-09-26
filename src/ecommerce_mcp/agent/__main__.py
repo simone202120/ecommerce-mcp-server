@@ -5,34 +5,26 @@ import asyncio
 import json
 import logging
 import sys
-from datetime import UTC, datetime
 
-from langchain_mcp_adapters.client import MultiServerMCPClient
-
-from ecommerce_mcp.agent.graph import AgentAnswer, ask, build_agent
-from ecommerce_mcp.config import Settings, get_settings
-from ecommerce_mcp.llm.chat import create_chat_model
-from ecommerce_mcp.llm.tracing import tracing_callbacks
+from ecommerce_mcp.agent.runner import RunReport, answer_question
+from ecommerce_mcp.config import get_settings
 
 
-def render(result: AgentAnswer) -> str:
+def render(report: RunReport) -> str:
+    result = report.result
     lines = ["Tool calls:"]
     lines += [
         f"  - {call.name}({json.dumps(call.arguments, ensure_ascii=False)})"
         for call in result.tool_calls
     ] or ["  (none)"]
-    lines += ["", "Answer:", result.answer]
-    return "\n".join(lines) + "\n"
-
-
-async def run(question: str, settings: Settings) -> AgentAnswer:
-    client = MultiServerMCPClient(
-        {"shop": {"url": settings.mcp_url, "transport": "streamable_http"}}
+    lines += ["", "Answer:", result.answer, ""]
+    lines.append(
+        f"{result.latency_seconds:.1f}s | {result.input_tokens} in / {result.output_tokens} out "
+        f"tokens | ~${report.cost_usd:.4f}"
     )
-    tools = await client.get_tools()
-    agent = build_agent(create_chat_model(settings), tools, datetime.now(UTC).date())
-    with tracing_callbacks(settings) as callbacks:
-        return await ask(agent, question, callbacks, settings.agent_max_steps)
+    if report.trace_url:
+        lines.append(f"Trace: {report.trace_url}")
+    return "\n".join(lines) + "\n"
 
 
 def main() -> None:
@@ -40,9 +32,9 @@ def main() -> None:
     parser.add_argument("question", help='e.g. "Which products are running low?"')
     args = parser.parse_args()
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
-    result = asyncio.run(run(args.question, get_settings()))
+    report = asyncio.run(answer_question(args.question, get_settings()))
     # The answer is the CLI's output, not a log record.
-    sys.stdout.write(render(result))
+    sys.stdout.write(render(report))
 
 
 if __name__ == "__main__":

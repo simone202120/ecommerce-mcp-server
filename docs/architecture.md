@@ -67,3 +67,21 @@ The image downloads the FastEmbed model at build time and runs with `HF_HUB_OFFL
 job and the server start without network access to Hugging Face. One image serves the seed job, the
 server and the agent CLI. A PR-only CI job builds the image without pushing it.
 *Trade-off:* a larger image (~70 MB of model weights) for predictable, offline startup.
+
+### Streamlit UI calls the agent module directly
+`docs/design.md` allows the chat UI to call either a thin FastAPI endpoint or the agent module.
+The UI imports only `agent.runner` (never `core/`), which reaches the tools over MCP streamable HTTP,
+exactly like the CLI.
+*Trade-off:* no extra HTTP service to build and deploy, but the UI process needs the LLM key.
+
+### Run cost is an estimate from configured prices
+Token counts come from the LLM's usage metadata; the dollar figure multiplies them by
+`LLM_INPUT_USD_PER_MTOK` / `LLM_OUTPUT_USD_PER_MTOK`.
+*Trade-off:* no dependency on provider-specific billing fields, at the price of keeping the two
+settings in line with the chosen model.
+
+### Tool cards use tabs for the raw response
+Streamlit does not allow nested expanders, so each tool card is an expander with a "Preview" tab
+(table, metrics or chart) and a "Raw response" tab holding the collapsed JSON. Cards with charts
+(`sales_summary`, `top_products`) start open because they carry the answer's numbers.
+*Trade-off:* one extra click to reach the raw JSON.
