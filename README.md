@@ -4,6 +4,8 @@ MCP server exposing safe, read-only tools over an e-commerce PostgreSQL database
 semantic product search), plus a LangGraph agent that uses it from a CLI, a Streamlit chat UI and
 Claude Desktop.
 
+![Agent answering "Top 5 products by revenue this quarter" with a tool call, chart, table and cost metrics](docs/images/ecommerce-chat.png)
+
 ```mermaid
 flowchart LR
     subgraph Clients
