@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
 OUTPUT = ROOT / "docs" / "code-map.md"
-ENTRY_POINTS = {"__main__", "main", "app", "server", "cli"}
+ENTRY_POINTS = {"__main__", "main", "app", "server", "cli", "seed"}
 
 
 def module_name(path: Path) -> str:
@@ -43,9 +43,10 @@ def main() -> None:
     modules = {module_name(f) for f in files}
     graph = {module_name(f): internal_imports(f, modules) for f in files}
     imported = set().union(*graph.values()) if graph else set()
+    packages = {module_name(f) for f in files if f.name == "__init__.py"}
     orphans = sorted(
         m
-        for m in modules
+        for m in modules - packages
         if m not in imported and "." in m and m.rsplit(".", 1)[-1] not in ENTRY_POINTS
     )
 

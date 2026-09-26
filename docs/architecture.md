@@ -1,5 +1,67 @@
 # Architecture
 
+## Overview
+
+A FastMCP server exposes five read-only tools and one resource over an e-commerce PostgreSQL
+database. A LangGraph agent consumes the same tools over MCP, from a CLI and a Streamlit chat UI;
+Claude Desktop connects to the server over stdio.
+
+```mermaid
+flowchart TB
+    subgraph clients[MCP clients]
+        CD[Claude Desktop]
+        CLI[agent CLI<br/>agent/__main__.py]
+        UI[Streamlit page<br/>ui/app.py]
+    end
+    CLI --> R[agent/runner.py]
+    UI --> R
+    R --> G[agent/graph.py<br/>create_agent ReAct loop]
+    G --> LLM[llm/chat.py<br/>OpenRouter]
+    R -.-> T[llm/tracing.py<br/>Langfuse, optional]
+    G -- streamable HTTP --> S
+    CD -- stdio --> S
+    S[server/<br/>FastMCP tools + schema://tables] --> SV[core/service.py]
+    SV --> V[core/validation.py]
+    SV --> Q[core/queries.py]
+    SV --> M[core/models.py]
+    S --> E[llm/embeddings.py<br/>FastEmbed]
+    SV -- read-only pool<br/>infra/db.py --> PG[(PostgreSQL + pgvector)]
+    SEED[infra/seed.py] --> PG
+```
+
+### Layers
+
+| Layer | Responsibility | May import |
+| --- | --- | --- |
+| `config.py` | The single `Settings` object, from environment variables | — |
+| `core/` | Validation, SQL, result models, use cases; takes a connection as an argument | nothing outside `core` |
+| `infra/` | Connection pool, schema, seed job | `core`, `llm.embeddings`, `config` |
+| `llm/` | Embedding model, chat model, prompts, tracing | `config` |
+| `server/` | MCP tool/resource definitions and transports | `core`, `infra`, `llm.embeddings` |
+| `agent/` | Agent graph, run orchestration, CLI | `llm`, `config` (tools only via MCP) |
+| `ui/` | One Streamlit page and its rendering helpers | `agent`, `config` (never `core`) |
+
+### Request flow (`low_stock_alert` from the UI)
+
+1. The UI calls `agent.runner.answer_question`, which loads the tools from the server over
+   streamable HTTP and builds the agent with today's date in the system prompt.
+2. The LLM decides to call `low_stock_alert(threshold=10)`; `langchain-mcp-adapters` sends the call.
+3. FastMCP validates the arguments against the JSON schema, then `server/tools.py` borrows a
+   read-only connection and calls `core.service.low_stock_alert`.
+4. The service runs the parameterized query and returns a `LowStockReport`, which FastMCP sends as
+   structured content plus JSON text.
+5. The agent answers; the runner returns tool calls with their results, token usage, latency,
+   estimated cost and the Langfuse trace link, which the UI renders as cards and metrics.
+
+### Testing strategy
+
+- **Unit** (`tests/unit`, no services): validation, SQL shape, service wiring on a fake connection,
+  seed determinism, the MCP server through the in-memory client with fakes, the agent with a fake
+  tool-calling model, and the Streamlit page with `AppTest`.
+- **Integration** (`-m integration`, seeded pgvector database): every query cross-checked against
+  the generated data, semantic search quality, read-only enforcement, every tool through MCP.
+- **LLM** (`-m llm`, manual): the demo question end to end with the real model.
+
 ## Decisions
 
 Important decisions and their trade-offs, in the order they were made.
