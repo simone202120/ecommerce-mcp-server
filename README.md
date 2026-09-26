@@ -92,6 +92,17 @@ All settings are environment variables (or `.env`), read by `src/ecommerce_mcp/c
 | `LLM_INPUT_USD_PER_MTOK` / `LLM_OUTPUT_USD_PER_MTOK` | `0.30` / `2.50` | Cost estimate shown per run |
 | `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` / `LANGFUSE_HOST` | empty | Optional tracing |
 
+## Security
+
+- Read-only by construction: SELECT-only parameterized SQL, row limits, and database sessions opened
+  with `default_transaction_read_only=on` and a statement timeout.
+- Tool arguments are validated (JSON schema bounds plus semantic checks); database errors reach the
+  client as a generic message, with details only in the server logs.
+- The agent's system prompt treats tool results as data, never as instructions.
+- **Local demo only.** Authentication on the MCP server is a non-goal, and the compose file uses a
+  throwaway `shop`/`shop` database password. Compose publishes ports on `127.0.0.1` only; do not
+  expose these services on a shared network without a reverse proxy with auth and TLS.
+
 ## Tests
 
 ```bash

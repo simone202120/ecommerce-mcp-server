@@ -5,7 +5,7 @@ services:
       POSTGRES_USER: shop
       POSTGRES_PASSWORD: shop
       POSTGRES_DB: shop
-    ports: ["5432:5432"]
+    ports: ["127.0.0.1:5432:5432"]
     volumes: ["pgdata:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U shop"]
@@ -29,7 +29,7 @@ services:
         required: false
     environment:
       DATABASE_URL: postgresql://shop:shop@postgres:5432/shop
-    ports: ["8000:8000"]
+    ports: ["127.0.0.1:8000:8000"]
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 8000), 2)"]
       interval: 5s
@@ -53,7 +53,7 @@ services:
         required: false
     environment:
       MCP_URL: http://mcp:8000/mcp
-    ports: ["8501:8501"]
+    ports: ["127.0.0.1:8501:8501"]
     depends_on:
       mcp:
         condition: service_healthy
