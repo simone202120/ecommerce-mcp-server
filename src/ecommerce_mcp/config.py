@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     langfuse_host: str = "https://cloud.langfuse.com"
 
     database_url: str = "postgresql://shop:shop@localhost:5432/shop"
+    db_pool_size: int = 5
+    db_statement_timeout_ms: int = 5000
+
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
 
     @property
     def tracing_enabled(self) -> bool:

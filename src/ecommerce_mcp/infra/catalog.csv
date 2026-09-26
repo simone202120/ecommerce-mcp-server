@@ -1,0 +1,51 @@
+sku,name,category,price,description
+EL-001,Wireless Noise-Cancelling Headphones,Electronics,179.00,Over-ear Bluetooth headphones with active noise cancellation and 30-hour battery.
+EL-002,True Wireless Earbuds,Electronics,89.00,"Compact in-ear earbuds with charging case, sweat resistant, ideal for workouts."
+EL-003,Portable Bluetooth Speaker,Electronics,59.00,Waterproof speaker with deep bass for music at the beach or by the pool.
+EL-004,4K Streaming Stick,Electronics,49.00,Plug-in HDMI stick to stream movies and series in 4K HDR on any TV.
+EL-005,Smartwatch with Heart Rate Monitor,Electronics,199.00,"Fitness smartwatch tracking heart rate, sleep, steps and GPS runs."
+EL-006,USB-C Fast Charger 65W,Electronics,35.00,"Compact GaN wall charger for laptops, tablets and phones."
+EL-007,Mechanical Keyboard,Electronics,119.00,Tactile mechanical keyboard with RGB backlight for typing and gaming.
+EL-008,Wireless Ergonomic Mouse,Electronics,45.00,Vertical ergonomic mouse that reduces wrist strain during long work days.
+EL-009,1080p Webcam,Electronics,69.00,Full HD webcam with dual microphones for video calls and streaming.
+EL-010,E-Reader with Backlight,Electronics,129.00,"Glare-free e-ink reader with adjustable warm light, holds thousands of books."
+HK-001,Stainless Steel Chef Knife,Home & Kitchen,65.00,"8-inch forged chef knife for slicing, dicing and chopping vegetables and meat."
+HK-002,Cast Iron Skillet,Home & Kitchen,39.00,Pre-seasoned 12-inch cast iron pan for searing steaks and baking cornbread.
+HK-003,Espresso Machine,Home & Kitchen,249.00,15-bar espresso maker with milk frother for cappuccino and latte at home.
+HK-004,Electric Kettle,Home & Kitchen,42.00,1.7 litre kettle with temperature control for tea and pour-over coffee.
+HK-005,Non-Stick Cookware Set,Home & Kitchen,149.00,Ten-piece set of pots and pans with ceramic non-stick coating.
+HK-006,Ceramic Coffee Mug Set,Home & Kitchen,28.00,"Set of four 350 ml stoneware mugs, dishwasher and microwave safe."
+HK-007,High-Speed Blender,Home & Kitchen,99.00,"Powerful blender for smoothies, soups and crushed ice."
+HK-008,Memory Foam Pillow,Home & Kitchen,49.00,Contoured memory foam pillow for neck support and better sleep.
+HK-009,Scented Soy Candle,Home & Kitchen,22.00,Hand-poured lavender candle with 50-hour burn time for a relaxing home.
+HK-010,Robot Vacuum Cleaner,Home & Kitchen,299.00,Self-charging robot vacuum that cleans carpets and hard floors on a schedule.
+SP-001,Non-Slip Yoga Mat,Sports & Outdoors,35.00,"6 mm thick yoga mat with non-slip surface for yoga, pilates and stretching."
+SP-002,Adjustable Dumbbells,Sports & Outdoors,189.00,Pair of dumbbells adjustable from 2 to 24 kg for home strength training.
+SP-003,Running Shoes,Sports & Outdoors,115.00,Lightweight cushioned running shoes for road running and marathons.
+SP-004,Insulated Water Bottle,Sports & Outdoors,29.00,Stainless steel bottle keeping drinks cold 24 hours or hot 12 hours.
+SP-005,Two-Person Camping Tent,Sports & Outdoors,139.00,"Waterproof dome tent for hiking and camping trips, sets up in minutes."
+SP-006,Hiking Backpack 40L,Sports & Outdoors,95.00,Ventilated trekking backpack with rain cover for multi-day hikes.
+SP-007,Resistance Bands Set,Sports & Outdoors,25.00,Five latex bands of different strengths for mobility and strength workouts.
+SP-008,Cycling Helmet,Sports & Outdoors,75.00,Lightweight ventilated bike helmet with adjustable fit and rear light.
+BK-001,The Pragmatic Programmer,Books,42.00,Classic software engineering book on craftsmanship and career growth.
+BK-002,Mediterranean Cookbook,Books,30.00,"Over 100 healthy recipes from Italy, Greece and Spain."
+BK-003,Sci-Fi Space Opera Novel,Books,18.00,"Epic science fiction adventure across galaxies, starships and alien empires."
+BK-004,Personal Finance for Beginners,Books,24.00,"Practical guide to budgeting, saving and investing in index funds."
+BK-005,Children's Picture Book,Books,14.00,"Illustrated bedtime story about a brave little fox, for ages 3 to 6."
+BK-006,Mindfulness and Meditation Guide,Books,20.00,Daily exercises to reduce stress and improve focus through meditation.
+BK-007,World History Atlas,Books,55.00,"Illustrated atlas with maps of empires, wars and civilizations through history."
+CL-001,Merino Wool Sweater,Clothing,89.00,"Soft crew-neck sweater in fine merino wool, warm for winter."
+CL-002,Waterproof Rain Jacket,Clothing,129.00,Breathable hooded jacket that keeps you dry in rain and wind.
+CL-003,Organic Cotton T-Shirt,Clothing,25.00,Classic fit t-shirt made from 100% organic cotton.
+CL-004,Slim Fit Jeans,Clothing,69.00,Stretch denim jeans with a modern slim fit.
+CL-005,Thermal Running Leggings,Clothing,49.00,Brushed thermal leggings for running and training in cold weather.
+CL-006,Leather Belt,Clothing,39.00,Full-grain leather belt with brushed metal buckle.
+CL-007,Wool Winter Beanie,Clothing,19.00,Knitted beanie hat that keeps your head warm on cold days.
+BT-001,Vitamin C Face Serum,Beauty & Personal Care,32.00,Brightening serum with vitamin C and hyaluronic acid for glowing skin.
+BT-002,Electric Toothbrush,Beauty & Personal Care,79.00,Rechargeable sonic toothbrush with pressure sensor and two-minute timer.
+BT-003,SPF 50 Sunscreen,Beauty & Personal Care,18.00,"Broad-spectrum sun protection lotion, water resistant and non-greasy."
+BT-004,Hair Dryer with Diffuser,Beauty & Personal Care,85.00,"Ionic hair dryer that dries fast with less frizz, includes diffuser."
+BT-005,Natural Shampoo,Beauty & Personal Care,15.00,"Sulfate-free shampoo with argan oil for soft, shiny hair."
+BT-006,Beard Grooming Kit,Beauty & Personal Care,45.00,"Beard oil, balm, comb and scissors for a well-groomed beard."
+BT-007,Moisturizing Hand Cream,Beauty & Personal Care,12.00,Rich shea butter cream for dry and cracked hands.
+BT-008,Aromatherapy Essential Oil Set,Beauty & Personal Care,34.00,Six pure essential oils such as eucalyptus and lavender for diffusers.
