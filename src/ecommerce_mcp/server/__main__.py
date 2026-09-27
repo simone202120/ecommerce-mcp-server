@@ -4,6 +4,7 @@ import argparse
 import logging
 
 from ecommerce_mcp.config import get_settings
+from ecommerce_mcp.infra.db import use_selector_event_loop_on_windows
 from ecommerce_mcp.server.app import create_server
 
 
@@ -18,6 +19,7 @@ def main() -> None:
     args = parser.parse_args()
     # Logs go to stderr: with stdio, stdout carries the MCP protocol.
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    use_selector_event_loop_on_windows()
     create_server(get_settings()).run(transport=args.transport)
 
 

@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     langfuse_secret_key: SecretStr = SecretStr("")
     langfuse_host: str = "https://cloud.langfuse.com"
 
-    database_url: str = "postgresql://shop:shop@localhost:5432/shop"
+    database_url: str = "postgresql://shop:shop@127.0.0.1:5432/shop"
     db_pool_size: int = Field(default=5, gt=0)
     db_statement_timeout_ms: int = Field(default=5000, gt=0)
 
