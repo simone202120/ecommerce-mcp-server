@@ -1,5 +1,7 @@
 """PostgreSQL access: a read-only connection pool for the tools and schema setup for the seed."""
 
+import asyncio
+import sys
 from importlib.resources import files
 from typing import Any
 
@@ -7,6 +9,12 @@ from psycopg import AsyncConnection
 from psycopg_pool import AsyncConnectionPool
 
 from ecommerce_mcp.config import Settings
+
+
+def use_selector_event_loop_on_windows() -> None:
+    """psycopg's async mode cannot run on Windows' default Proactor event loop."""
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 def read_only_pool(settings: Settings) -> AsyncConnectionPool[AsyncConnection[Any]]:

@@ -16,7 +16,7 @@ from psycopg import AsyncConnection
 
 from ecommerce_mcp.config import Settings, get_settings
 from ecommerce_mcp.core.queries import vector_literal
-from ecommerce_mcp.infra.db import apply_schema
+from ecommerce_mcp.infra.db import apply_schema, use_selector_event_loop_on_windows
 from ecommerce_mcp.llm.embeddings import create_embedder
 
 logger = logging.getLogger(__name__)
@@ -181,6 +181,7 @@ async def seed_database(settings: Settings, now: datetime) -> Dataset:
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    use_selector_event_loop_on_windows()
     dataset = asyncio.run(seed_database(get_settings(), datetime.now(UTC)))
     logger.info(
         "Seeded %d products, %d customers, %d orders",

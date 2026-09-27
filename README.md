@@ -71,11 +71,14 @@ Seed the database first, then add to `claude_desktop_config.json`:
     "ecommerce": {
       "command": "uv",
       "args": ["--directory", "/path/to/ecommerce-mcp-server", "run", "python", "-m", "ecommerce_mcp.server"],
-      "env": { "DATABASE_URL": "postgresql://shop:shop@localhost:5432/shop" }
+      "env": { "DATABASE_URL": "postgresql://shop:shop@127.0.0.1:5432/shop" }
     }
   }
 }
 ```
+
+Use `127.0.0.1` rather than `localhost`: Docker publishes the port on IPv4 only, and psycopg's
+async connect would try IPv6 (`::1`) first and hang.
 
 ## Configuration
 
@@ -83,7 +86,7 @@ All settings are environment variables (or `.env`), read by `src/ecommerce_mcp/c
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `DATABASE_URL` | `postgresql://shop:shop@localhost:5432/shop` | PostgreSQL connection |
+| `DATABASE_URL` | `postgresql://shop:shop@127.0.0.1:5432/shop` | PostgreSQL connection |
 | `DB_POOL_SIZE` / `DB_STATEMENT_TIMEOUT_MS` | `5` / `5000` | Tool connection pool |
 | `EMBEDDING_MODEL` | `BAAI/bge-small-en-v1.5` | FastEmbed model (must output 384-dim vectors) |
 | `MCP_HOST` / `MCP_PORT` | `127.0.0.1` / `8000` | Streamable HTTP bind address |
